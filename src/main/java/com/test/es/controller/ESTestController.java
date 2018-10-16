@@ -37,6 +37,11 @@ public class ESTestController {
     @Resource
     private TransportClient client;
 
+    /**
+     * 通过id查找信息
+     * @param id
+     * @return
+     */
     @GetMapping(value = "/getInfo")
     public Map<String, Object> getInfo(@RequestParam(value = "id")String id) {
 
@@ -48,6 +53,14 @@ public class ESTestController {
 
     }
 
+    /**
+     * 添加信息
+     * @param author
+     * @param title
+     * @param wordCount
+     * @param publishDate
+     * @return
+     */
     @PutMapping(value = "/addInfo")
     public String addInfo(@RequestParam(value = "author")String author,
                           @RequestParam(value = "title")String title,
@@ -55,6 +68,7 @@ public class ESTestController {
                           @RequestParam(value = "publishDate") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") Date publishDate) {
 
         try {
+            //构造信息
             XContentBuilder xContentBuilder = XContentFactory.jsonBuilder()
                     .startObject()
                     .field("author", author)
@@ -71,6 +85,11 @@ public class ESTestController {
         }
     }
 
+    /**
+     * 删除信息
+     * @param id
+     * @return
+     */
     @DeleteMapping(value = "/deleteInfo")
     public String deleteInfo(@RequestParam(value = "id")String id) {
 
@@ -79,6 +98,15 @@ public class ESTestController {
         return deleteResponse.status().toString();
     }
 
+    /**
+     * 更新信息
+     * @param id
+     * @param author
+     * @param title
+     * @param wordCount
+     * @param publishDate
+     * @return
+     */
     @PostMapping(value = "updateInfo")
     public String updateInfo(@RequestParam(value = "id") String id,
                                           @RequestParam(value = "author")String author,
@@ -103,12 +131,21 @@ public class ESTestController {
         }
     }
 
+    /**
+     * 通过条件查询信息
+     * @param author
+     * @param title
+     * @param gtWordCount
+     * @param ltWordCount
+     * @return
+     */
     @RequestMapping(value = "queryInfos")
     public List<Map<String,Object>> queryInfos(@RequestParam(value = "author", required = false) String author,
                            @RequestParam(value = "title", required = false) String title,
                            @RequestParam(value = "gtWordCount",defaultValue = "0", required = false) Integer gtWordCount,
                            @RequestParam(value = "ltWordCount", required = false) Integer ltWordCount) {
 
+        //通过b布尔查询信息
         BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery();
 
         if (!StringUtils.isEmpty(author)) {
@@ -134,6 +171,7 @@ public class ESTestController {
                 .setFrom(0)
                 .setSize(10);
 
+        //打印查询json信息
         System.out.println(searchRequestBuilder);
 
         List<Map<String, Object>> results = new ArrayList<>();
